@@ -8,15 +8,14 @@ name: CI
 # - Runs on pull_request (never pull_request_target): fork PRs get a read-only token and no
 #   secrets. Workflows from outside contributors also need the owner's approval before they
 #   run (Settings → Actions → General → "Require approval for all external contributors").
-# - Skips docs-only changes, cancels superseded runs of the same PR, and has short timeouts.
+# - Cancels superseded runs of the same PR and has short timeouts. It runs on every PR, docs
+#   included, because build and gitleaks are required checks: a skipped run never reports, and
+#   GitHub would block the PR forever. Both jobs together take well under a minute.
 # - No push trigger: the PR run already tested the merge result's commits.
 
 on:
   pull_request:
     branches: [main]
-    paths-ignore:
-      - "**.md"
-      - LICENSE
   workflow_dispatch:
 
 permissions:

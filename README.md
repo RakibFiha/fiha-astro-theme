@@ -65,11 +65,11 @@ npm run dev       # http://localhost:4321
 npm run verify    # build, print both CVs (needs Google Chrome), check dist/
 ```
 
-**CI** (`.github/workflows/ci.yml`) runs on every PR to `main` that changes more than docs:
+**CI** (`.github/workflows/ci.yml`) runs on every PR to `main`. Both jobs are required checks in the `main` ruleset:
 - **build:** builds the example site, prints both CVs with headless Chrome and runs `check-dist`
 - **gitleaks:** scans the whole history for secrets
 
-It's kept cheap and hard to abuse. It uses `pull_request`, never `pull_request_target`, so fork PRs get a read-only token and no secrets. Outside contributors' runs wait for the owner's approval. Docs-only PRs are skipped, superseded runs are cancelled, and both jobs have short timeouts. Dependabot keeps the example's Astro version and the actions current, so a breaking Astro release shows up here first.
+It's kept cheap and hard to abuse. It uses `pull_request`, never `pull_request_target`, so fork PRs get a read-only token and no secrets. Outside contributors' runs wait for the owner's approval, and only GitHub-owned actions may run. Superseded runs are cancelled and both jobs have short timeouts. Docs-only PRs aren't skipped: a required check that never runs would block the PR. Dependabot keeps the example's Astro version and the actions current, so a breaking Astro release shows up here first.
 
 ## Changing the theme
 
