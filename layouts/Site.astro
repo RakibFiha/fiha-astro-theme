@@ -1,7 +1,9 @@
 ---
 // Shared page shell: <head> metadata, header (language switch + theme toggle), footer.
-import "../styles/site.css";
-// Optional site-only overrides: <site>/src/styles/local.css, loaded after the theme styles.
+// Theme styles, then the optional site-only overrides in <site>/src/styles/local.css.
+// Both go through import.meta.glob so Vite keeps them in this order (a plain import is
+// hoisted above the glob, which would let the theme override the site).
+import.meta.glob("../styles/site.css", { eager: true });
 import.meta.glob("/src/styles/local.css", { eager: true });
 import Icon from "../components/Icon.astro";
 import { getContent, siteUrl, type Lang } from "../lib/content";
