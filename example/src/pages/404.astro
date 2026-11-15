@@ -1,0 +1,14 @@
+---
+import Site from "../../../layouts/Site.astro";
+---
+<Site lang="en" title="Page not found" noindex fullMeta={false} showSwitch={false}>
+  <main id="main" class="notfound">
+    <p class="eyebrow">404</p>
+    <h1>This page doesn't exist.</h1>
+    <p lang="ja">お探しのページは見つかりませんでした。</p>
+    <ul class="links">
+      <li><a class="primary" href="/">Go to the homepage</a></li>
+      <li><a href="/ja/" lang="ja">日本語のホームへ</a></li>
+    </ul>
+  </main>
+</Site>

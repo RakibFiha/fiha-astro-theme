@@ -1,0 +1,142 @@
+# Placeholder content for the theme's example site (used by CI). Not a real person.
+# content/ja.yaml keeps the same structure (same entries, same order).
+lang: en
+
+meta:
+  title: "Jane Doe · Software Engineer"
+  description: "Jane Doe is a fictional software engineer: placeholder content for the fiha-astro-theme example site."
+  ogTitle: "Jane Doe · Software Engineer"
+  ogDescription: "Placeholder content for the fiha-astro-theme example site."
+  ogLocale: en_GB
+  ogLocaleAlternate: ja_JP
+  path: /
+
+ui:
+  skipLink: Skip to content
+  mark: jane.doe
+  homeLabel: "Jane Doe, home"
+  themeToggleLabel: Toggle dark mode
+  switchLanguage: { href: /ja/, lang: ja, label: 日本語, title: 日本語版を表示 }
+  sections:
+    about: About
+    experience: Experience
+    projects: Projects
+    education: Education
+    research: Research
+    skills: Skills
+    contact: Contact
+  nowBadge: Now
+  emailButton: Email me
+  cvButton: CV (PDF)
+  cvPdf: /Jane_Doe_CV.pdf
+  portraitAlt: Placeholder portrait
+  footerName: Jane Doe
+  footerPlace: Example City
+  builtWith: 'Built with <a href="https://astro.build" rel="noopener" target="_blank">Astro</a>'
+  projectsNav: Projects
+  projectsPage:
+    title: "Projects · Jane Doe"
+    description: "Example projects."
+    heading: Projects
+    intro: "Example projects, with and without demos."
+    highlights: Highlights
+    demos: Demos
+    screenshots: Screenshots
+    code: Code
+    noDemo: Demo in preparation.
+    seeDemos: See all projects and demos →
+
+person:
+  nameParts: [Jane Doe]
+  subline: '<span lang="ja" translate="no">ドウ ジェーン</span>'
+  eyebrow: "Software Engineer · Example City"
+  lede: "I build <strong>example things</strong> for the theme's CI."
+  email: jane@example.com
+  github: https://github.com/example
+  photo: /placeholder.svg
+
+about:
+  - "Jane Doe is a fictional person. This text exists so the theme can be built and tested."
+  - "Every field here is a placeholder."
+
+experience:
+  - title: Software Engineer
+    org: Example Corp
+    orgUrl: https://example.com
+    now: true
+    when: Apr 2024 – Present · Example City
+    points:
+      - "Built <strong>example services</strong>."
+    cv:
+      employment: Full-time
+      tech: [Python, Docker]
+  - title: Career break
+    when: 2022 – 2024
+
+projects:
+  - title: Example project with a demo
+    id: example-demo
+    when: Personal
+    description: "A project with a demo link and a repository."
+    stack: [Astro, TypeScript]
+    demos:
+      - { label: Live demo, url: "https://example.com/demo" }
+    repo: https://github.com/example/example
+    cv:
+      points: ["Example highlight for the CV."]
+  - title: Example project without a demo
+    id: example-plain
+    when: Personal
+    description: "A project with no demo, so the page says it's in preparation."
+    stack: []
+
+education:
+  - title: BSc, Computer Science
+    org: Example University
+    when: 2018 – 2022
+
+research:
+  - title: An example paper
+    url: https://example.com/paper
+    when: "2022"
+    note: "Placeholder research entry."
+
+skills:
+  - label: Languages
+    items: Python, TypeScript
+  - label: Spoken languages
+    cv: additional
+    cvOrder: 1
+    items: English, Japanese
+
+contact:
+  links:
+    - { label: GitHub @example, url: "https://github.com/example" }
+
+jsonLd:
+  name: Jane Doe
+  givenName: Jane
+  familyName: Doe
+  alternateName: [ドウ ジェーン]
+  jobTitle: Software Engineer
+  worksFor: { name: Example Corp }
+  homeLocation: Example City
+  alumniOf: [Example University]
+  sameAs: ["https://github.com/example"]
+
+cv:
+  documentTitle: "Jane Doe — CV"
+  docLabel: ""
+  heading: 'Jane Doe <span class="kana" lang="ja">ドウ ジェーン</span>'
+  role: "Software Engineer"
+  meta:
+    - "Example City"
+    - '<a href="mailto:jane@example.com">jane@example.com</a>'
+  summary: "Fictional software engineer. Placeholder summary for the example CV."
+  sections:
+    summary: Summary
+    skills: Skills
+    experience: Experience
+    projects: Projects
+    education: Education
+    additional: Additional
