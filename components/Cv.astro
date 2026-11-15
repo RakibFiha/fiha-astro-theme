@@ -1,0 +1,95 @@
+---
+// Printable CV built from content/<lang>.yaml. scripts/build-cv.sh prints it to PDF.
+// Each entry uses its `cv:` overrides when present, otherwise the site text.
+import cvCss from "../styles/cv.css?raw";
+import { getContent, type Lang } from "../lib/content";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const c = getContent(lang);
+const s = c.cv.sections;
+const sep = lang === "ja" ? "、" : ", ";
+
+const skills = c.skills.filter((k) => k.cv === "skills");
+const additional = c.skills
+  .filter((k) => k.cv === "additional")
+  .sort((a, b) => (a.cvOrder ?? 99) - (b.cvOrder ?? 99));
+
+const experience = c.experience.map((e) => ({
+  title: e.cv?.title ?? e.title,
+  org: e.cv?.org ?? e.org,
+  when: e.cv?.when ?? e.when,
+  note: e.cv?.note ?? e.note,
+  points: e.cv?.points ?? e.points ?? [],
+}));
+const projects = c.projects.map((p) => ({
+  title: p.cv?.title ?? p.title,
+  when: p.cv?.when ?? p.when,
+  stack: (p.cv?.stack ?? p.stack).join(sep),
+  // Without CV-specific lines, the CV uses the site description.
+  points: p.cv?.points ?? [p.description],
+}));
+const education = c.education.map((e) => ({
+  title: e.cv?.title ?? e.title,
+  org: e.cv?.org ?? e.org,
+  when: e.cv?.when ?? e.when,
+  note: e.cv?.note ?? e.note,
+  points: e.cv?.points ?? [],
+}));
+
+type Item = { title: string; org?: string; when: string; note?: string; stack?: string; points: string[] };
+---
+<!doctype html>
+<html lang={lang}>
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <title>{c.cv.documentTitle}</title>
+  <style is:inline set:html={cvCss}></style>
+</head>
+<body>
+  <header>
+    {c.cv.docLabel && <p class="doc">{c.cv.docLabel}</p>}
+    <h1 set:html={c.cv.heading} />
+    <p class="role" set:html={c.cv.role} />
+    <p class="meta">{c.cv.meta.map((m) => <span set:html={m} />)}</p>
+  </header>
+
+  <h2>{s.summary}</h2>
+  <p class="summary" set:html={c.cv.summary} />
+
+  <h2>{s.skills}</h2>
+  <dl class="skills">
+    {skills.map((k) => <><dt set:html={k.cvLabel ?? k.label} /><dd set:html={k.items} /></>)}
+  </dl>
+
+  {[
+    { heading: s.experience, items: experience as Item[] },
+    { heading: s.projects, items: projects as Item[] },
+    { heading: s.education, items: education as Item[] },
+  ].map(({ heading, items }) => (
+    <>
+      {items.map((it, i) => {
+        const body = (
+          <div class="item">
+            <div class="head">
+              <h3>{it.title}{it.org && <> <span class="org">· {it.org}</span></>}</h3>
+              <span class="when">{it.when}</span>
+            </div>
+            {it.stack && <p class="stack">{it.stack}</p>}
+            {it.note && <p class="note" set:html={it.note} />}
+            {it.points.length > 0 && <ul>{it.points.map((pt) => <li set:html={pt} />)}</ul>}
+          </div>
+        );
+        // Keep each section heading on the same page as its first entry.
+        return i === 0 ? <div class="keep"><h2 set:html={heading} />{body}</div> : body;
+      })}
+    </>
+  ))}
+
+  <h2>{s.additional}</h2>
+  <dl class="skills">
+    {additional.map((k) => <><dt set:html={k.cvLabel ?? k.label} /><dd set:html={k.items} /></>)}
+  </dl>
+</body>
+</html>

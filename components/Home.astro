@@ -1,0 +1,136 @@
+---
+// The one-page site, rendered from content/<lang>.yaml.
+import Site from "../layouts/Site.astro";
+import Icon from "./Icon.astro";
+import { checkParity, getContent, type Lang } from "../lib/content";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+checkParity();
+const c = getContent(lang);
+const s = c.ui.sections;
+const ext = { rel: "noopener", target: "_blank" } as const;
+const me = { rel: "me noopener", target: "_blank" } as const;
+---
+<Site lang={lang}>
+  <main id="main">
+    <div class="hero">
+      <div>
+        <p class="eyebrow" set:html={c.person.eyebrow} />
+        {/* translate="no": machine translation (Google Translate etc.) would mangle the name. */}
+        <h1 translate="no">
+          {c.person.nameParts.length > 1
+            ? c.person.nameParts.map((part, i) => <>{i > 0 && " "}<span class="nw">{part}</span></>)
+            : c.person.nameParts[0]}
+        </h1>
+        <p class="kana" translate="no" set:html={c.person.subline} />
+        <p class="lede" set:html={c.person.lede} />
+        <ul class="links">
+          <li><a class="primary" href={`mailto:${c.person.email}`}><Icon name="mail" /> {c.ui.emailButton}</a></li>
+          {c.person.linkedin && <li><a href={c.person.linkedin} {...me}><Icon name="linkedin" /> LinkedIn</a></li>}
+          {c.person.github && <li><a href={c.person.github} {...me}><Icon name="github" /> GitHub</a></li>}
+          <li><a href={c.ui.cvPdf} {...ext} type="application/pdf"><Icon name="doc" /> {c.ui.cvButton}</a></li>
+        </ul>
+      </div>
+      <img class="portrait" src={c.person.photo} width="200" height="200" alt={c.ui.portraitAlt}>
+    </div>
+
+    <section id="about" aria-labelledby="about-h">
+      <h2 id="about-h">{s.about}</h2>
+      <div class="prose">
+        {c.about.map((p) => <p set:html={p} />)}
+      </div>
+    </section>
+
+    <section id="experience" aria-labelledby="exp-h">
+      <h2 id="exp-h">{s.experience}</h2>
+      <ol class="entries">
+        {c.experience.map((e) => (
+          <li class="entry">
+            <h3>
+              {e.title}{e.org && <> <span class="org">· {e.orgUrl ? <a href={e.orgUrl} {...ext}>{e.org}</a> : e.org}</span></>}
+              {e.now && <span class="badge">{c.ui.nowBadge}</span>}
+            </h3>
+            <span class="when">{e.when}</span>
+            {e.note && <p set:html={e.note} />}
+            {e.points && (
+              <ul class="points">
+                {e.points.map((pt) => <li set:html={pt} />)}
+              </ul>
+            )}
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    {c.projects.length > 0 && (
+      <section id="projects" aria-labelledby="proj-h">
+        <h2 id="proj-h">{s.projects}</h2>
+        <div>
+        <ol class="entries">
+          {c.projects.map((p) => (
+            <li class="entry">
+              <h3>{p.title}</h3>
+              <span class="when">{p.when}</span>
+              <p set:html={p.description} />
+              {p.stack.length > 0 && <p class="stack">{p.stack.join(" · ")}</p>}
+            </li>
+          ))}
+        </ol>
+        <p class="more"><a href={lang === "en" ? "/projects/" : "/ja/projects/"}>{c.ui.projectsPage.seeDemos}</a></p>
+        </div>
+      </section>
+    )}
+
+    <section id="education" aria-labelledby="edu-h">
+      <h2 id="edu-h">{s.education}</h2>
+      <ol class="entries">
+        {c.education.map((e) => (
+          <li class="entry">
+            <h3>{e.title} <span class="org">· {e.orgUrl ? <a href={e.orgUrl} {...ext}>{e.org}</a> : e.org}</span></h3>
+            <span class="when">{e.when}</span>
+            {e.note && <p set:html={e.note} />}
+          </li>
+        ))}
+      </ol>
+    </section>
+
+    {c.research.length > 0 && (
+      <section id="research" aria-labelledby="res-h">
+        <h2 id="res-h">{s.research}</h2>
+        <ol class="entries">
+          {c.research.map((r) => (
+            <li class="entry">
+              <h3>
+                <a href={r.url} target="_blank" rel={r.url.startsWith("http") ? "noopener" : undefined} lang={r.titleLang}>{r.title}</a>
+              </h3>
+              <span class="when">{r.when}</span>
+              <p set:html={r.note} />
+            </li>
+          ))}
+        </ol>
+      </section>
+    )}
+
+    <section id="skills" aria-labelledby="skills-h">
+      <h2 id="skills-h">{s.skills}</h2>
+      <dl class="skills">
+        {c.skills.map((k) => (
+          <div><dt set:html={k.label} /><dd set:html={k.items} /></div>
+        ))}
+      </dl>
+    </section>
+
+    <section id="contact" aria-labelledby="contact-h">
+      <h2 id="contact-h">{s.contact}</h2>
+      <div>
+        <p class="contact-big"><a href={`mailto:${c.person.email}`}>{c.person.email}</a></p>
+        {c.contact.links.length > 0 && (
+          <ul class="socials">
+            {c.contact.links.map((l) => <li><a href={l.url} {...me}>{l.label}</a></li>)}
+          </ul>
+        )}
+      </div>
+    </section>
+  </main>
+</Site>

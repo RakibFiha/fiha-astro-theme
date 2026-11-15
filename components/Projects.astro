@@ -1,0 +1,84 @@
+---
+// The projects page (/projects/ and /ja/projects/), rendered from the `projects` list in
+// content/<lang>.yaml. Demos, repository links and screenshots appear only when an entry has them.
+import Site from "../layouts/Site.astro";
+import { checkParity, getContent, type Lang } from "../lib/content";
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+checkParity();
+const c = getContent(lang);
+const t = c.ui.projectsPage;
+const ext = { rel: "noopener", target: "_blank" } as const;
+const isExternal = (url: string) => /^https?:\/\//.test(url);
+---
+<Site
+  lang={lang}
+  title={t.title}
+  description={t.description}
+  paths={{ en: "/projects/", ja: "/ja/projects/" }}
+  current="projects"
+>
+  <main id="main">
+    <div class="page-head">
+      <h1>{t.heading}</h1>
+      <p class="lede" set:html={t.intro} />
+    </div>
+
+    {c.projects.map((p) => {
+      const points = p.cv?.points ?? [];
+      const demos = p.demos ?? [];
+      const images = p.images ?? [];
+      return (
+        <section class="project" id={p.id} aria-labelledby={`${p.id}-h`}>
+          <h2><span class="when">{p.when}</span></h2>
+          <div>
+            <h3 id={`${p.id}-h`}><a class="anchor" href={`#${p.id}`}>{p.title}</a></h3>
+            <p class="desc" set:html={p.description} />
+            {p.stack.length > 0 && <p class="stack">{p.stack.join(" · ")}</p>}
+
+            {points.length > 0 && (
+              <>
+                <h4>{t.highlights}</h4>
+                <ul class="points">{points.map((pt) => <li set:html={pt} />)}</ul>
+              </>
+            )}
+
+            {images.length > 0 && (
+              <>
+              <h4>{t.screenshots}</h4>
+              <div class="shots">
+                {images.map((img) => (
+                  <a href={img.src} {...ext}><img src={img.src} alt={img.alt} loading="lazy" decoding="async"></a>
+                ))}
+              </div>
+              </>
+            )}
+
+            {demos.length > 0 && (
+              <>
+                <h4>{t.demos}</h4>
+                <ul class="demo-links">
+                  {demos.map((d) => (
+                    <li><a href={d.url} {...(isExternal(d.url) ? ext : {})}>{d.label}</a></li>
+                  ))}
+                </ul>
+              </>
+            )}
+            {/* `demos: []` in the YAML means the project has no demos, so skip the note. */}
+            {p.demos === undefined && images.length === 0 && (
+              <>
+                <h4>{t.demos}</h4>
+                <p class="no-demo">{t.noDemo}</p>
+              </>
+            )}
+
+            {p.repo && (
+              <p class="repo"><span>{t.code}:</span> <a href={p.repo} {...ext}>{p.repo.replace(/^https:\/\//, "")}</a></p>
+            )}
+          </div>
+        </section>
+      );
+    })}
+  </main>
+</Site>
