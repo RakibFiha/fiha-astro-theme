@@ -1,0 +1,144 @@
+# テーマのサンプルサイト用のダミーデータ（CIで使用）。実在の人物ではありません。
+lang: ja
+
+meta:
+  title: "ドウ ジェーン · ソフトウェアエンジニア"
+  description: "ドウ ジェーンは架空のソフトウェアエンジニアです。fiha-astro-themeのサンプルサイト用のダミーデータです。"
+  ogTitle: "ドウ ジェーン · ソフトウェアエンジニア"
+  ogDescription: "fiha-astro-themeのサンプルサイト用のダミーデータ。"
+  ogLocale: ja_JP
+  ogLocaleAlternate: en_GB
+  path: /ja/
+
+ui:
+  skipLink: 本文へスキップ
+  mark: jane.doe
+  homeLabel: "ドウ ジェーン、ホーム"
+  themeToggleLabel: ダークモードの切り替え
+  switchLanguage: { href: /, lang: en, label: English, title: View in English }
+  sections:
+    about: 自己紹介
+    experience: 職歴
+    projects: プロジェクト
+    education: 学歴
+    research: 研究
+    skills: スキル
+    contact: 連絡先
+  nowBadge: 現在
+  emailButton: メールする
+  cvButton: 職務経歴書（PDF）
+  cvPdf: /Jane_Doe_CV_ja.pdf
+  portraitAlt: ダミーの写真
+  footerName: ドウ ジェーン
+  footerPlace: サンプル市
+  builtWith: '<a href="https://astro.build" rel="noopener" target="_blank" lang="en">Astro</a>で構築'
+  projectsNav: プロジェクト
+  projectsPage:
+    title: "プロジェクト · ドウ ジェーン"
+    description: "サンプルのプロジェクト。"
+    heading: プロジェクト
+    intro: "デモあり・なしのサンプルプロジェクト。"
+    highlights: 主なポイント
+    demos: デモ
+    screenshots: スクリーンショット
+    code: コード
+    noDemo: デモは準備中です。
+    seeDemos: すべてのプロジェクトとデモを見る →
+
+person:
+  nameParts: [ドウ, ジェーン]
+  subline: '<span lang="en" translate="no">Jane Doe</span>'
+  eyebrow: "ソフトウェアエンジニア · サンプル市"
+  lede: "テーマのCIのために<strong>サンプル</strong>を作っています。"
+  email: jane@example.com
+  github: https://github.com/example
+  photo: /placeholder.svg
+
+about:
+  - "ドウ ジェーンは架空の人物です。テーマをビルドして確認するための文章です。"
+  - "すべての項目がダミーです。"
+
+experience:
+  - title: ソフトウェアエンジニア
+    org: Example株式会社
+    orgUrl: https://example.com
+    now: true
+    when: 2024年4月 – 現在 · サンプル市
+    points:
+      - "<strong>サンプルのサービス</strong>を構築。"
+    cv:
+      employment: 正社員
+      tech: [Python, Docker]
+  - title: キャリアブレイク
+    when: 2022年 – 2024年
+
+projects:
+  - title: デモありのサンプルプロジェクト
+    id: example-demo
+    when: 個人
+    description: "デモリンクとリポジトリがあるプロジェクト。"
+    stack: [Astro, TypeScript]
+    demos:
+      - { label: ライブデモ, url: "https://example.com/demo" }
+    repo: https://github.com/example/example
+    cv:
+      points: ["職務経歴書用のサンプルのポイント。"]
+  - title: デモなしのサンプルプロジェクト
+    id: example-plain
+    when: 個人
+    description: "デモがないため「準備中」と表示されるプロジェクト。"
+    stack: []
+
+education:
+  - title: 学士（コンピュータサイエンス）
+    org: Example大学
+    when: 2018年 – 2022年
+
+research:
+  - title: サンプルの論文
+    titleLang: en
+    url: https://example.com/paper
+    when: 2022年
+    note: "ダミーの研究項目。"
+
+skills:
+  - label: プログラミング言語
+    items: Python、TypeScript
+  - label: 語学
+    cv: additional
+    cvOrder: 1
+    items: 英語、日本語
+
+contact:
+  links:
+    - { label: GitHub @example, url: "https://github.com/example" }
+
+jsonLd:
+  name: ドウ ジェーン
+  givenName: ジェーン
+  familyName: ドウ
+  alternateName: [Jane Doe]
+  jobTitle: ソフトウェアエンジニア
+  worksFor: { name: Example株式会社 }
+  homeLocation: サンプル市
+  alumniOf: [Example大学]
+  sameAs: ["https://github.com/example"]
+
+cv:
+  documentTitle: "ドウ ジェーン — 職務経歴書"
+  docLabel: 職務経歴書
+  heading: 'ドウ ジェーン <span class="latin" lang="en">Jane Doe</span>'
+  role: ソフトウェアエンジニア
+  meta:
+    - '<a href="mailto:jane@example.com">jane@example.com</a>'
+  summary: "架空のソフトウェアエンジニアです。サンプルの職務要約。"
+  selfPr:
+    - "サンプルの自己PRです。"
+  sections:
+    summary: 職務要約
+    skills: 活かせる経験・知識・技術
+    experience: 職務経歴
+    projects: 個人開発・自己研鑽
+    education: 学歴
+    additional: 語学
+    selfPr: 自己PR

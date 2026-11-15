@@ -1,0 +1,16 @@
+{
+  "name": "fiha-astro-theme-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "postinstall": "ln -sfn example/node_modules ../node_modules",
+    "dev": "astro dev",
+    "build": "astro build",
+    "cv": "astro build && ./scripts/build-cv.sh",
+    "verify": "astro build && CV_OUT_DIR=dist ./scripts/build-cv.sh && ./scripts/check-dist.sh"
+  },
+  "dependencies": {
+    "astro": "7.4.7",
+    "yaml": "2.9.1"
+  }
+}

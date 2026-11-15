@@ -54,9 +54,26 @@ git submodule add https://github.com/RakibFiha/fiha-astro-theme.git theme
 - To update a site: `git -C theme pull origin main`, then commit the new `theme` pointer in a PR. Dependabot (`package-ecosystem: gitsubmodule`) can open these PRs.
 - `yaml` and `astro` come from the site's own `node_modules`.
 
+## Example site and CI
+
+`example/` is a complete site with placeholder content ("Jane Doe", example.com) that uses the theme from `../`. It's the reference for what a site provides, and it's what CI builds.
+
+```bash
+cd example
+npm ci            # postinstall links example/node_modules to ../node_modules for the theme's files
+npm run dev       # http://localhost:4321
+npm run verify    # build, print both CVs (needs Google Chrome), check dist/
+```
+
+**CI** (`.github/workflows/ci.yml`) runs on every PR to `main`. Both jobs are required checks in the `main` ruleset:
+- **build:** builds the example site, prints both CVs with headless Chrome and runs `check-dist`
+- **gitleaks:** scans the whole history for secrets
+
+It's kept cheap and hard to abuse. It uses `pull_request`, never `pull_request_target`, so fork PRs get a read-only token and no secrets. Outside contributors' runs wait for the owner's approval, and only GitHub-owned actions may run. Superseded runs are cancelled and both jobs have short timeouts. Docs-only PRs aren't skipped: a required check that never runs would block the PR. Dependabot keeps the example's Astro version and the actions current, so a breaking Astro release shows up here first.
+
 ## Changing the theme
 
-1. Open a PR here. Keep it free of personal content: no names, photos, contact details or YAML content.
+1. Open a PR here. Keep it free of personal content: no names, photos, contact details or real YAML content (the example uses placeholders only). CI must pass.
 2. Merge with a **merge commit** (not squash), so commits that a site's preview already points to stay reachable.
 3. After merging, bump the `theme` pointer in each site and check its Cloudflare Pages preview.
 
