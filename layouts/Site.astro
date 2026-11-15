@@ -1,0 +1,137 @@
+---
+// Shared page shell: <head> metadata, header (language switch + theme toggle), footer.
+import "../styles/site.css";
+// Optional site-only overrides: <site>/src/styles/local.css, loaded after the theme styles.
+import.meta.glob("/src/styles/local.css", { eager: true });
+import Icon from "../components/Icon.astro";
+import { getContent, siteUrl, type Lang } from "../lib/content";
+
+interface Props {
+  lang: Lang;
+  /** Override the <title>; defaults to the content file's meta.title. */
+  title?: string;
+  /** Extra <head> content for special pages (e.g. 404). */
+  noindex?: boolean;
+  /** Full page metadata (canonical, Open Graph, hreflang, JSON-LD). Off for the 404 page. */
+  fullMeta?: boolean;
+  /** Show the language switch in the header. */
+  showSwitch?: boolean;
+  /** Override the meta description; defaults to the content file's meta.description. */
+  description?: string;
+  /** This page's path in each language (canonical, hreflang, language switch). Defaults to the homepages. */
+  paths?: { en: string; ja: string };
+  /** Mark the header's Projects link as the current page. */
+  current?: "projects";
+}
+
+const {
+  lang,
+  title,
+  noindex = false,
+  fullMeta = true,
+  showSwitch = true,
+  description,
+  paths = { en: "/", ja: "/ja/" },
+  current,
+} = Astro.props;
+const c = getContent(lang);
+const homeHref = c.meta.path;
+const [markName, ...markParts] = c.ui.mark.split(".");
+const markRest = markParts.join(".");
+const pagePath = paths[lang];
+const otherPath = paths[lang === "en" ? "ja" : "en"];
+const projectsHref = lang === "en" ? "/projects/" : "/ja/projects/";
+const ld = c.jsonLd;
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: ld.name,
+  givenName: ld.givenName,
+  familyName: ld.familyName,
+  alternateName: ld.alternateName,
+  url: siteUrl(c.meta.path),
+  image: siteUrl(c.person.photo),
+  jobTitle: ld.jobTitle,
+  worksFor: {
+    "@type": "Organization",
+    name: ld.worksFor.name,
+    ...(ld.worksFor.parent && { parentOrganization: { "@type": "Organization", name: ld.worksFor.parent } }),
+  },
+  homeLocation: { "@type": "Place", name: ld.homeLocation },
+  alumniOf: ld.alumniOf.map((name) => ({ "@type": "CollegeOrUniversity", name })),
+  sameAs: ld.sameAs,
+};
+---
+<!doctype html>
+<html lang={lang}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title set:html={title ?? c.meta.title} />
+  {noindex && <meta name="robots" content="noindex">}
+  {fullMeta && (
+    <>
+      <meta name="description" content={description ?? c.meta.description}>
+      <link rel="canonical" href={siteUrl(pagePath)}>
+      <link rel="alternate" hreflang="en" href={siteUrl(paths.en)}>
+      <link rel="alternate" hreflang="ja" href={siteUrl(paths.ja)}>
+      <link rel="alternate" hreflang="x-default" href={siteUrl(paths.en)}>
+      <meta name="theme-color" content="#faf8f5" media="(prefers-color-scheme: light)">
+      <meta name="theme-color" content="#141312" media="(prefers-color-scheme: dark)">
+      <meta property="og:type" content="profile">
+      <meta property="og:locale" content={c.meta.ogLocale}>
+      <meta property="og:locale:alternate" content={c.meta.ogLocaleAlternate}>
+      <meta property="og:url" content={siteUrl(pagePath)}>
+      <meta property="og:title" content={(title ?? c.meta.ogTitle).replaceAll("&amp;", "&")}>
+      <meta property="og:description" content={description ?? c.meta.ogDescription}>
+      <meta property="og:image" content={siteUrl(c.person.photo)}>
+      <meta name="twitter:card" content="summary">
+    </>
+  )}
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <script is:inline>
+    /* Apply a saved theme before first paint to avoid a flash. */
+    try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; } catch (e) {}
+  </script>
+  {fullMeta && <script type="application/ld+json" set:html={JSON.stringify(jsonLd, null, 2)} />}
+</head>
+<body>
+  <a class="skip" href="#main">{c.ui.skipLink}</a>
+
+  <div class="wrap">
+    <header class="top">
+      <a class="mark" href={homeHref} aria-label={c.ui.homeLabel}>{markName}<span>.</span>{markRest}</a>
+      <div class="top-actions">
+        {showSwitch && c.projects.length > 0 && (
+          <a class="nav-link" href={projectsHref} aria-current={current === "projects" ? "page" : undefined}>{c.ui.projectsNav}</a>
+        )}
+        {showSwitch && (
+          <a class="lang-switch" href={otherPath} hreflang={c.ui.switchLanguage.lang} lang={c.ui.switchLanguage.lang} title={c.ui.switchLanguage.title}>{c.ui.switchLanguage.label}</a>
+        )}
+        <button class="theme-toggle" type="button" aria-label={c.ui.themeToggleLabel}>
+          <Icon name="moon" class="moon" />
+          <Icon name="sun" class="sun" />
+        </button>
+      </div>
+    </header>
+
+    <slot />
+
+    <footer>
+      <span>© {new Date().getFullYear()} <span translate="no">{c.ui.footerName}</span></span>
+      <span>{c.ui.footerPlace} · <span set:html={c.ui.builtWith} /></span>
+    </footer>
+  </div>
+
+  <script is:inline>
+    document.querySelector(".theme-toggle").addEventListener("click", function () {
+      var root = document.documentElement;
+      var dark = root.dataset.theme
+        ? root.dataset.theme === "dark"
+        : window.matchMedia("(prefers-color-scheme: dark)").matches;
+      root.dataset.theme = dark ? "light" : "dark";
+      try { localStorage.setItem("theme", root.dataset.theme); } catch (e) {}
+    });
+  </script>
+</body>
+</html>

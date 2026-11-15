@@ -1,0 +1,150 @@
+---
+// Japanese CV in the conventional 職務経歴書 layout, built from content/ja.yaml.
+// scripts/build-cv.sh prints it to the PDF named by ui.cvPdf in content/ja.yaml.
+import cvCss from "../styles/cv.css?raw";
+import { getContent } from "../lib/content";
+
+const c = getContent("ja");
+const s = c.cv.sections;
+
+// 作成日: the build date in Japan time, e.g. 2026年11月14日 (the PDF is rebuilt when content changes).
+const asOf = new Intl.DateTimeFormat("ja-JP", {
+  timeZone: "Asia/Tokyo",
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+}).format(new Date());
+
+// "2021年2月 – 2026年5月 · 東京" -> period + place
+const splitWhen = (when: string) => {
+  const [period, place] = when.split(" · ");
+  return { period, place };
+};
+
+const jobs = c.experience.map((e) => ({
+  title: e.cv?.title ?? e.title,
+  org: e.cv?.org ?? e.org,
+  ...splitWhen(e.cv?.when ?? e.when),
+  employment: e.cv?.employment,
+  note: e.cv?.note ?? e.note,
+  points: e.cv?.points ?? e.points ?? [],
+  tech: e.cv?.tech ?? [],
+}));
+const skills = c.skills.filter((k) => k.cv === "skills");
+const languages = c.skills.filter((k) => k.cv === "additional");
+const projects = c.projects.map((p) => ({
+  title: p.cv?.title ?? p.title,
+  when: p.cv?.when ?? p.when,
+  stack: (p.cv?.stack ?? p.stack).join("、"),
+  // Without CV-specific lines, the CV uses the site description.
+  points: p.cv?.points ?? [p.description],
+}));
+const education = c.education.map((e) => ({
+  title: e.cv?.title ?? e.title,
+  org: e.cv?.org ?? e.org,
+  when: e.cv?.when ?? e.when,
+  note: e.cv?.note ?? e.note,
+  points: e.cv?.points ?? [],
+}));
+---
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex">
+  <title>{c.cv.documentTitle}</title>
+  <style is:inline set:html={cvCss}></style>
+</head>
+<body class="shokumu">
+  <header class="jp-head">
+    <h1 class="jp-title">職務経歴書</h1>
+    <div class="jp-asof">
+      <p>{asOf}現在</p>
+      <p>氏名　{c.person.nameParts.join(" ")}</p>
+    </div>
+  </header>
+  <p class="jp-contact">{c.cv.meta.map((m) => <span set:html={m} />)}</p>
+
+  <h2>{s.summary}</h2>
+  <p class="jp-text" set:html={c.cv.summary} />
+
+  <h2>{s.experience}</h2>
+  {jobs.map((j) => (
+    <table class="jp-job">
+      <thead>
+        <tr>
+          <th colspan="2">
+            <span class="jp-org">{j.org ?? j.title}</span>
+            {j.employment && <span class="jp-emp">雇用形態：{j.employment}</span>}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="jp-period">{j.period}{j.place && <><br><span class="jp-place">{j.place}</span></>}</td>
+          <td>
+            {j.org && <p class="jp-role">{j.title}</p>}
+            {j.note && <p class="jp-note" set:html={j.note} />}
+            {j.points.length > 0 && (
+              <>
+                <p class="jp-label">【業務内容】</p>
+                <ul>{j.points.map((pt) => <li set:html={pt} />)}</ul>
+              </>
+            )}
+            {j.tech.length > 0 && <p class="jp-label">【使用技術】<span class="jp-tech">{j.tech.join("、")}</span></p>}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  ))}
+
+  <div class="keep">
+    <h2>{s.skills}</h2>
+    <table class="jp-grid">
+      <tbody>
+        {skills.map((k) => <tr><th set:html={k.cvLabel ?? k.label} /><td set:html={k.items} /></tr>)}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="keep">
+    <h2>{s.additional}</h2>
+    <table class="jp-grid">
+      <tbody>
+        {languages.map((k) => <tr><th set:html={k.cvLabel ?? k.label} /><td set:html={k.items} /></tr>)}
+      </tbody>
+    </table>
+  </div>
+
+  {projects.length > 0 && (
+    <>
+    <h2>{s.projects}</h2>
+    {projects.map((p) => (
+      <div class="item">
+        <div class="head"><h3>{p.title}</h3><span class="when">{p.when}</span></div>
+        {p.stack && <p class="stack">{p.stack}</p>}
+        {p.points.length > 0 && <ul>{p.points.map((pt) => <li set:html={pt} />)}</ul>}
+      </div>
+    ))}
+    </>
+  )}
+
+  <h2>{s.education}</h2>
+  {education.map((e) => (
+    <div class="item">
+      <div class="head"><h3>{e.title} <span class="org">· {e.org}</span></h3><span class="when">{e.when}</span></div>
+      {e.note && <p class="note" set:html={e.note} />}
+      {e.points.length > 0 && <ul>{e.points.map((pt) => <li set:html={pt} />)}</ul>}
+    </div>
+  ))}
+
+  {c.cv.selfPr && c.cv.selfPr.length > 0 && (
+    <div class="keep">
+      <h2>{s.selfPr ?? "自己PR"}</h2>
+      {c.cv.selfPr.map((p) => <p class="jp-text" set:html={p} />)}
+    </div>
+  )}
+
+  <p class="jp-end">以上</p>
+</body>
+</html>
